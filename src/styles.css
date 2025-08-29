@@ -66,9 +66,9 @@ body {
 .eyebrow { color: #3aa981; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; font-size: 12px; margin-bottom: 12px; }
 .title { font-size: clamp(36px, 6vw, 62px); line-height: 1.06; margin: 8px 0 12px; }
 .subtitle { color: var(--muted); font-size: clamp(16px, 2.2vw, 18px); margin: 0 auto 26px; }
-.cta-row { display: grid; grid-template-columns: 1fr auto; gap: 12px; align-items: center; justify-content: center; }
+.cta-row { display: grid; grid-template-columns: 1fr; gap: 12px; align-items: center; justify-content: center; justify-items: center; }
 
-.signup { display: grid; grid-template-columns: 1fr auto; gap: 10px; padding: 10px; border-radius: 16px; align-items: center; }
+.signup { display: grid; grid-template-columns: 1fr auto; gap: 10px; padding: 10px; border-radius: 16px; align-items: center; width: min(720px, 100%); }
 .input { height: 44px; padding: 0 14px; border-radius: 10px; border: 1px solid rgba(60,78,128,0.16); background: rgba(255,255,255,0.7); color: var(--ink); }
 .input::placeholder { color: #9aa0a6; }
 .input:focus { outline: none; border-color: rgba(150,230,161,0.5); box-shadow: 0 0 0 5px rgba(150,230,161,0.18); background: #fff; }
@@ -102,6 +102,11 @@ body {
 .cta-band { margin: 10vh 0 8vh; padding: 22px; border-radius: 18px; display: grid; justify-items: center; gap: 12px; text-align: center; }
 .cta-title { margin: 0; font-size: clamp(22px, 4vw, 32px); }
 .cta-form { display: grid; grid-template-columns: 1fr auto; gap: 10px; width: min(640px, 100%); }
+
+/* Quiz teaser under the hero form */
+.quiz-teaser { margin: 14px auto 0; padding: 14px; border-radius: 16px; display: grid; grid-template-columns: 1fr auto; gap: 12px; align-items: center; width: min(720px, 100%); }
+.qt-title { margin: 0 0 4px; font-size: 16px; }
+.qt-blurb { margin: 0; color: var(--muted); font-size: 14px; }
 
 .footer { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; color: #6a738a; font-size: 13px; padding: 48px 0 14px; }
 .footer .link { color: #3a60d3; text-decoration: none; }

@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 
-function useReveal(threshold = 0.2) {
+function useReveal({ threshold = 0.2, once = false } = {}) {
   const ref = useRef(null);
   const [visible, setVisible] = useState(false);
   useEffect(() => {
@@ -9,19 +9,24 @@ function useReveal(threshold = 0.2) {
     const obs = new IntersectionObserver(
       (entries) => {
         entries.forEach((e) => {
-          if (e.isIntersecting) setVisible(true);
+          if (e.isIntersecting) {
+            setVisible(true);
+            if (once) obs.unobserve(el);
+          } else if (!once) {
+            setVisible(false);
+          }
         });
       },
       { threshold }
     );
     obs.observe(el);
     return () => obs.disconnect();
-  }, [threshold]);
+  }, [threshold, once]);
   return { ref, visible };
 }
 
-function Reveal({ children, delay = 0, className = '' }) {
-  const { ref, visible } = useReveal();
+function Reveal({ children, delay = 0, className = '', once = false }) {
+  const { ref, visible } = useReveal({ once });
   return (
     <div
       ref={ref}
@@ -85,7 +90,7 @@ export default function App() {
       <div className="container">
         <header className="header glass">
           <div className="brand">
-            <img src="/logo.svg" alt="Skin Tracker" className="logo" />
+            <img src={`${import.meta.env.BASE_URL}logo.svg`} alt="Skin Tracker" className="logo" />
             <span className="name">Skin Tracker</span>
           </div>
           <nav className="nav">
@@ -113,13 +118,22 @@ export default function App() {
                   <input className="input" type="email" placeholder="Enter your email" aria-label="Email address" />
                   <button className="button" type="submit">Join Beta</button>
                 </form>
-                <button className="button secondary" aria-disabled="true" title="Coming soon">Take Quiz</button>
               </div>
             </Reveal>
 
+            {/* <Reveal delay={300}>
+              <div className="quiz-teaser glass">
+                <div className="qt-text">
+                  <h3 className="qt-title">Quick skin quiz</h3>
+                  <p className="qt-blurb">Answer a few questions to get your skin profile and a starter routine.</p>
+                </div>
+                <button className="button secondary" type="button" title="Coming soon" aria-disabled="true">Take Quiz</button>
+              </div>
+            </Reveal> */}
+
             <Reveal delay={240}>
               <ul className="badges">
-                <li className="badge">Phd-approved</li>
+                <li className="badge">Local-first</li>
                 <li className="badge">Privacy-first</li>
                 <li className="badge">iOS & Android</li>
               </ul>
