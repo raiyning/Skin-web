@@ -1,6 +1,6 @@
-# Skin Web – Coming Soon
+# Skin Tracker — Coming Soon
 
-A minimal Vite + React boilerplate with an aesthetic "Coming Soon" landing page.
+A Vite + React landing page with a soft, liquid-glass aesthetic, animated blobs, and scroll‑reveal sections.
 
 ## Quick Start
 
@@ -13,8 +13,8 @@ A minimal Vite + React boilerplate with an aesthetic "Coming Soon" landing page.
 ## Structure
 
 - `index.html` – root document
-- `src/App.jsx` – landing layout and markup
-- `src/styles.css` – theme and styles
+- `src/App.jsx` – landing layout, sections, scroll reveal
+- `src/styles.css` – soft palette, glassmorphism, animations
 - `public/` – static assets like `favicon.svg`, `logo.svg`
 
 ## Next Steps
@@ -23,4 +23,4 @@ A minimal Vite + React boilerplate with an aesthetic "Coming Soon" landing page.
 - Add SEO/open-graph tags and a share image
 - Swap fonts and brand colors to match your identity
 - Add a basic analytics snippet (Plausible, PostHog, GA)
-
+ - Expand sections (Pricing, FAQ) once copy is ready
