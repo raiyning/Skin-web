@@ -80,19 +80,42 @@ function useScrollGradient() {
 
 const ENDPOINT = "https://tdtfj6gwy242y4zz3mbesgbrjq0fdjpw.lambda-url.eu-west-2.on.aws/"; // your Function URL
 
-async function onSubmit(e) {
-  e.preventDefault();
-  const email = e.target.email.value.trim();
-  const res = await fetch(ENDPOINT, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ email }),
-  });
-  if (res.ok) alert("Subscribed!"); else alert("Error");
-}
-
 export default function App() {
   useScrollGradient();
+  const [loading, setLoading] = useState(false);
+  const [toast, setToast] = useState({ show: false, kind: 'success', text: '' });
+
+  const onSubmit = async (e) => {
+    e.preventDefault();
+    const form = e.currentTarget;
+    const email = form?.elements?.email?.value?.trim();
+    if (!email) {
+      setToast({ show: true, kind: 'error', text: 'Please enter your email.' });
+      setTimeout(() => setToast((t) => ({ ...t, show: false })), 2600);
+      return;
+    }
+    setLoading(true);
+    try {
+      const res = await fetch(ENDPOINT, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      });
+      let payload = {};
+      try { payload = await res.json(); } catch {}
+      if (res.ok) {
+        setToast({ show: true, kind: 'success', text: 'Subscribed! Check your inbox.' });
+        form.reset();
+      } else {
+        setToast({ show: true, kind: 'error', text: payload?.error || 'Something went wrong.' });
+      }
+    } catch (err) {
+      setToast({ show: true, kind: 'error', text: 'Network error. Please try again.' });
+    } finally {
+      setLoading(false);
+      setTimeout(() => setToast((t) => ({ ...t, show: false })), 2600);
+    }
+  };
   return (
     <div className="page">
       <div className="bg" aria-hidden="true">
@@ -128,8 +151,8 @@ export default function App() {
             <Reveal delay={180}>
               <div className="cta-row">
                 <form className="signup glass" onSubmit={onSubmit}>
-                  <input className="input" name="email" type="email" placeholder="Enter your email" aria-label="Email address" />
-                  <button className="button" type="submit">Join Beta</button>
+                  <input className="input" name="email" type="email" placeholder="Enter your email" aria-label="Email address" disabled={loading} aria-disabled={loading} />
+                  <button className="button" type="submit" disabled={loading} aria-busy={loading}>{loading ? 'Submitting…' : 'Join Beta'}</button>
                 </form>
               </div>
             </Reveal>
@@ -213,8 +236,8 @@ export default function App() {
             </Reveal>
             <Reveal delay={60}>
               <form className="cta-form" onSubmit={onSubmit}>
-                <input className="input" name="email" type="email" placeholder="Email for early access" aria-label="Email address" />
-                <button className="button" type="submit">Join Beta</button>
+                <input className="input" name="email" type="email" placeholder="Email for early access" aria-label="Email address" disabled={loading} aria-disabled={loading} />
+                <button className="button" type="submit" disabled={loading} aria-busy={loading}>{loading ? 'Submitting…' : 'Join Beta'}</button>
               </form>
             </Reveal>
           </section>
@@ -227,6 +250,14 @@ export default function App() {
           <span className="dot">•</span>
           <span className="disclaimer">Skin Tracker provides educational insights and routine support. It does not diagnose, treat or prevent disease.</span>
         </footer>
+      </div>
+      {/* Toast notification */}
+      <div
+        className={`toast glass ${toast.show ? 'show' : ''} ${toast.kind}`}
+        role="status"
+        aria-live="polite"
+      >
+        {toast.text}
       </div>
     </div>
   );

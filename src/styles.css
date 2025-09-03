@@ -135,3 +135,26 @@ body {
   .blob { animation: none !important; }
   .reveal { opacity: 1 !important; transform: none !important; transition: none !important; }
 }
+
+/* Toast notification */
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: 18px;
+  transform: translateX(-50%) translateY(8px);
+  opacity: 0;
+  padding: 10px 14px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.8);
+  box-shadow: var(--shadow);
+  color: var(--ink);
+  pointer-events: none;
+  transition: opacity 220ms ease, transform 220ms ease;
+}
+.toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+.toast.success { border-color: rgba(150,230,161,0.55); }
+.toast.error { border-color: rgba(255,120,120,0.55); }
