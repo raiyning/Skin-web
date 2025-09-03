@@ -78,6 +78,19 @@ function useScrollGradient() {
   }, []);
 }
 
+const ENDPOINT = "https://tdtfj6gwy242y4zz3mbesgbrjq0fdjpw.lambda-url.eu-west-2.on.aws/"; // your Function URL
+
+async function onSubmit(e) {
+  e.preventDefault();
+  const email = e.target.email.value.trim();
+  const res = await fetch(ENDPOINT, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email }),
+  });
+  if (res.ok) alert("Subscribed!"); else alert("Error");
+}
+
 export default function App() {
   useScrollGradient();
   return (
@@ -114,8 +127,8 @@ export default function App() {
 
             <Reveal delay={180}>
               <div className="cta-row">
-                <form className="signup glass" onSubmit={(e) => e.preventDefault()}>
-                  <input className="input" type="email" placeholder="Enter your email" aria-label="Email address" />
+                <form className="signup glass" onSubmit={onSubmit}>
+                  <input className="input" name="email" type="email" placeholder="Enter your email" aria-label="Email address" />
                   <button className="button" type="submit">Join Beta</button>
                 </form>
               </div>
@@ -199,8 +212,8 @@ export default function App() {
               <h3 className="cta-title">See your skin progress</h3>
             </Reveal>
             <Reveal delay={60}>
-              <form className="cta-form" onSubmit={(e) => e.preventDefault()}>
-                <input className="input" type="email" placeholder="Email for early access" aria-label="Email address" />
+              <form className="cta-form" onSubmit={onSubmit}>
+                <input className="input" name="email" type="email" placeholder="Email for early access" aria-label="Email address" />
                 <button className="button" type="submit">Join Beta</button>
               </form>
             </Reveal>

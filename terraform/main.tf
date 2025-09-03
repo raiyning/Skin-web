@@ -7,7 +7,7 @@ terraform {
   backend "s3" {
     bucket  = "raiyan-tfstate-06dee1"
     key     = "mailing-list/terraform.tfstate"
-    region  = "eu-west-2"
+    region  = "us-west-2"
     profile = "raiyanspass-admin"
     encrypt = true
   }

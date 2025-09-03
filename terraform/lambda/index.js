@@ -8,10 +8,6 @@ const ok = (status, body = {}) => ({
   statusCode: status,
   headers: {
     "Content-Type": "application/json",
-    "Access-Control-Allow-Origin": process.env.ALLOWED_ORIGIN,
-    "Access-Control-Allow-Methods": "POST",
-    "Access-Control-Allow-Headers": "content-type",
-    "Vary": "Origin",
   },
   body: JSON.stringify(body),
 });
