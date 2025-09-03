@@ -121,16 +121,6 @@ export default function App() {
               </div>
             </Reveal>
 
-            {/* <Reveal delay={300}>
-              <div className="quiz-teaser glass">
-                <div className="qt-text">
-                  <h3 className="qt-title">Quick skin quiz</h3>
-                  <p className="qt-blurb">Answer a few questions to get your skin profile and a starter routine.</p>
-                </div>
-                <button className="button secondary" type="button" title="Coming soon" aria-disabled="true">Take Quiz</button>
-              </div>
-            </Reveal> */}
-
             <Reveal delay={240}>
               <ul className="badges">
                 <li className="badge">Local-first</li>
