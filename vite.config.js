@@ -1,9 +1,11 @@
-import { defineConfig } from 'vite';
-import react from '@vitejs/plugin-react';
+// vite.config.js
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
 
-// https://vitejs.dev/config/
+// If VITE_BASE is unset, default to root '/'
+const base = process.env.VITE_BASE || '/'
+
 export default defineConfig({
-  base: '/Skin-web/',
   plugins: [react()],
-});
-
+  base,
+})
