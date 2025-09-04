@@ -78,7 +78,7 @@ function useScrollGradient() {
   }, []);
 }
 
-const ENDPOINT = "https://tdtfj6gwy242y4zz3mbesgbrjq0fdjpw.lambda-url.eu-west-2.on.aws/"; // your Function URL
+const ENDPOINT = import.meta.env.VITE_SUBSCRIBE_URL; // your Function URL
 
 export default function App() {
   useScrollGradient();

@@ -1,7 +1,7 @@
 terraform {
   required_version = ">= 1.6.0"
   required_providers {
-    aws = { source = "hashicorp/aws", version = ">= 5.0" }
+    aws     = { source = "hashicorp/aws", version = ">= 5.0" }
     archive = { source = "hashicorp/archive", version = ">= 2.4.0" }
   }
   backend "s3" {
@@ -39,6 +39,22 @@ resource "aws_dynamodb_table" "mailing_list" {
   # }
 }
 
+resource "aws_dynamodb_table" "rate_limit" {
+  name         = "${var.project}-rate-limit"
+  billing_mode = "PAY_PER_REQUEST"
+  hash_key     = "key"
+
+  attribute {
+    name = "key"
+    type = "S"
+  }
+
+  ttl {
+    attribute_name = "ttl_epoch" # expire counters automatically
+    enabled        = true
+  }
+}
+
 # --------------------------
 # IAM role for Lambda
 # --------------------------
@@ -66,6 +82,10 @@ data "aws_iam_policy_document" "lambda_policy" {
   statement {
     actions   = ["dynamodb:PutItem"]
     resources = [aws_dynamodb_table.mailing_list.arn]
+  }
+  statement {
+    actions   = ["dynamodb:UpdateItem"]
+    resources = [aws_dynamodb_table.rate_limit.arn]
   }
 }
 
@@ -101,10 +121,15 @@ resource "aws_lambda_function" "subscribe" {
   runtime       = "nodejs20.x"
   architectures = ["arm64"]
 
+  timeout                        = 3
+  memory_size                    = 128
+  reserved_concurrent_executions = 5  # cap abuse/spend
+
   environment {
     variables = {
       TABLE_NAME     = aws_dynamodb_table.mailing_list.name
       ALLOWED_ORIGIN = var.website_origin
+      RATE_TABLE     = aws_dynamodb_table.rate_limit.name # <—
     }
   }
 }
@@ -126,4 +151,9 @@ resource "aws_lambda_function_url" "subscribe" {
 output "subscribe_url" {
   value       = aws_lambda_function_url.subscribe.function_url
   description = "POST your form here"
+}
+
+resource "aws_cloudwatch_log_group" "lambda" {
+  name              = "/aws/lambda/${aws_lambda_function.subscribe.function_name}"
+  retention_in_days = 14
 }
