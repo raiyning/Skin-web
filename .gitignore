@@ -3,3 +3,43 @@ dist
 .DS_Store
 *.log
 
+# --- Secrets and environment files ---
+.env
+.env.*
+!.env.example
+.envrc
+.direnv/
+.npmrc
+.yarnrc
+.yarnrc.yml
+*.pem
+*.key
+*.p12
+*.crt
+
+# --- Terraform state and local artifacts (sensitive) ---
+.terraform/
+terraform.tfstate
+terraform.tfstate.*
+*.tfstate.backup
+crash.log
+crash.*.log
+*.tfvars
+*.tfvars.json
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+terraform.rc
+.terraformrc
+
+# --- Lambda build zips and local packages ---
+terraform/**/function.zip
+terraform/**/dist/
+terraform/**/node_modules/
+
+# --- Misc local tooling ---
+.vercel
+.env.production.local
+.env.development.local
+.env.test.local

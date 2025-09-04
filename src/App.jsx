@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 
-function useReveal(threshold = 0.2) {
+function useReveal({ threshold = 0.2, once = false } = {}) {
   const ref = useRef(null);
   const [visible, setVisible] = useState(false);
   useEffect(() => {
@@ -9,19 +9,24 @@ function useReveal(threshold = 0.2) {
     const obs = new IntersectionObserver(
       (entries) => {
         entries.forEach((e) => {
-          if (e.isIntersecting) setVisible(true);
+          if (e.isIntersecting) {
+            setVisible(true);
+            if (once) obs.unobserve(el);
+          } else if (!once) {
+            setVisible(false);
+          }
         });
       },
       { threshold }
     );
     obs.observe(el);
     return () => obs.disconnect();
-  }, [threshold]);
+  }, [threshold, once]);
   return { ref, visible };
 }
 
-function Reveal({ children, delay = 0, className = '' }) {
-  const { ref, visible } = useReveal();
+function Reveal({ children, delay = 0, className = '', once = false }) {
+  const { ref, visible } = useReveal({ once });
   return (
     <div
       ref={ref}
@@ -73,8 +78,44 @@ function useScrollGradient() {
   }, []);
 }
 
+const ENDPOINT = import.meta.env.VITE_SUBSCRIBE_URL; // your Function URL
+
 export default function App() {
   useScrollGradient();
+  const [loading, setLoading] = useState(false);
+  const [toast, setToast] = useState({ show: false, kind: 'success', text: '' });
+
+  const onSubmit = async (e) => {
+    e.preventDefault();
+    const form = e.currentTarget;
+    const email = form?.elements?.email?.value?.trim();
+    if (!email) {
+      setToast({ show: true, kind: 'error', text: 'Please enter your email.' });
+      setTimeout(() => setToast((t) => ({ ...t, show: false })), 2600);
+      return;
+    }
+    setLoading(true);
+    try {
+      const res = await fetch(ENDPOINT, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      });
+      let payload = {};
+      try { payload = await res.json(); } catch {}
+      if (res.ok) {
+        setToast({ show: true, kind: 'success', text: 'Subscribed! Check your inbox.' });
+        form.reset();
+      } else {
+        setToast({ show: true, kind: 'error', text: payload?.error || 'Something went wrong.' });
+      }
+    } catch (err) {
+      setToast({ show: true, kind: 'error', text: 'Network error. Please try again.' });
+    } finally {
+      setLoading(false);
+      setTimeout(() => setToast((t) => ({ ...t, show: false })), 2600);
+    }
+  };
   return (
     <div className="page">
       <div className="bg" aria-hidden="true">
@@ -85,7 +126,7 @@ export default function App() {
       <div className="container">
         <header className="header glass">
           <div className="brand">
-            <img src="/logo.svg" alt="Skin Tracker" className="logo" />
+            <img src={`${import.meta.env.BASE_URL}logo.svg`} alt="Skin Tracker" className="logo" />
             <span className="name">Skin Tracker</span>
           </div>
           <nav className="nav">
@@ -109,17 +150,16 @@ export default function App() {
 
             <Reveal delay={180}>
               <div className="cta-row">
-                <form className="signup glass" onSubmit={(e) => e.preventDefault()}>
-                  <input className="input" type="email" placeholder="Enter your email" aria-label="Email address" />
-                  <button className="button" type="submit">Join Beta</button>
+                <form className="signup glass" onSubmit={onSubmit}>
+                  <input className="input" name="email" type="email" placeholder="Enter your email" aria-label="Email address" disabled={loading} aria-disabled={loading} />
+                  <button className="button" type="submit" disabled={loading} aria-busy={loading}>{loading ? 'Submitting…' : 'Join Beta'}</button>
                 </form>
-                <button className="button secondary" aria-disabled="true" title="Coming soon">Take Quiz</button>
               </div>
             </Reveal>
 
             <Reveal delay={240}>
               <ul className="badges">
-                <li className="badge">Phd-approved</li>
+                <li className="badge">Local-first</li>
                 <li className="badge">Privacy-first</li>
                 <li className="badge">iOS & Android</li>
               </ul>
@@ -195,9 +235,9 @@ export default function App() {
               <h3 className="cta-title">See your skin progress</h3>
             </Reveal>
             <Reveal delay={60}>
-              <form className="cta-form" onSubmit={(e) => e.preventDefault()}>
-                <input className="input" type="email" placeholder="Email for early access" aria-label="Email address" />
-                <button className="button" type="submit">Join Beta</button>
+              <form className="cta-form" onSubmit={onSubmit}>
+                <input className="input" name="email" type="email" placeholder="Email for early access" aria-label="Email address" disabled={loading} aria-disabled={loading} />
+                <button className="button" type="submit" disabled={loading} aria-busy={loading}>{loading ? 'Submitting…' : 'Join Beta'}</button>
               </form>
             </Reveal>
           </section>
@@ -210,6 +250,14 @@ export default function App() {
           <span className="dot">•</span>
           <span className="disclaimer">Skin Tracker provides educational insights and routine support. It does not diagnose, treat or prevent disease.</span>
         </footer>
+      </div>
+      {/* Toast notification */}
+      <div
+        className={`toast glass ${toast.show ? 'show' : ''} ${toast.kind}`}
+        role="status"
+        aria-live="polite"
+      >
+        {toast.text}
       </div>
     </div>
   );
